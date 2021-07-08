@@ -8,5 +8,7 @@ import (
 
 func GetUserPosts(userID int64) (*model.Post, error) {
 
+	db := GetDb().Collection("comment")
+	fmt.Println(db)
 	return nil, fmt.Errorf("user %v was not found", userID)
 }

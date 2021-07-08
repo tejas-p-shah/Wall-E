@@ -21,5 +21,7 @@ func GetUser(userID int64) (*model.User, error) {
 		return user, nil
 	}
 
+	db := GetDb().Collection("comment")
+	fmt.Println(db)
 	return nil, fmt.Errorf("user %v was not found", userID)
 }
