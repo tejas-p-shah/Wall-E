@@ -11,4 +11,5 @@ type Comment struct {
 	CommentContent  string    `json:"comment_content"`
 	CommentReaction string    `json:"comment_reaction"`
 	CommentDateTime time.Time `json:"comment_datetime"`
+	Subcomment      []string
 }
