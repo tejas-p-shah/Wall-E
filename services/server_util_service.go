@@ -13,3 +13,12 @@ func GetPort() string {
 
 	return port
 }
+
+// func GetSecretKey() string {
+// 	secretKey, exists := os.LookupEnv("SECRETKEY")
+// 	if !exists {
+// 		log.Fatal("Could not Found SECRETKEY in .env file")
+// 	}
+
+// 	return secretKey
+// }

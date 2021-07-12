@@ -1,0 +1,139 @@
+package controllers
+
+import (
+	"encoding/json"
+	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/tejas-p-shah/Wall-E/model"
+	"github.com/tejas-p-shah/Wall-E/services"
+)
+
+func AddNewPost(w http.ResponseWriter, r *http.Request) {
+	tokenStatus, claims := validate_token(w, r)
+
+	if !tokenStatus {
+		redirectURL := "/"
+		http.Redirect(w, r, redirectURL, http.StatusMovedPermanently)
+		return
+	}
+
+	headerContentTtype := r.Header.Get("Content-Type")
+	if headerContentTtype != "application/json" {
+		w.WriteHeader(http.StatusUnsupportedMediaType)
+		return
+	}
+
+	params := mux.Vars(r)
+	var post model.Post
+	_ = json.NewDecoder(r.Body).Decode(&post)
+	post.WallUserName = params["wall_id"]
+
+	result, err := services.AddNewPost(claims.UserName, post)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{ "message": "` + err.Error() + `" }`))
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(result)
+}
+
+func UpdatePost(w http.ResponseWriter, r *http.Request) {
+	tokenStatus, claims := validate_token(w, r)
+
+	if !tokenStatus {
+		redirectURL := "/"
+		http.Redirect(w, r, redirectURL, http.StatusMovedPermanently)
+		return
+	}
+
+	headerContentTtype := r.Header.Get("Content-Type")
+	if headerContentTtype != "application/json" {
+		w.WriteHeader(http.StatusUnsupportedMediaType)
+		return
+	}
+
+	// params := mux.Vars(r)
+	// fmt.Println("Wall : ", params["wall_id"])
+	// fmt.Println("Post : ", params["post_id"])
+	var post model.Post
+	_ = json.NewDecoder(r.Body).Decode(&post)
+
+	if post.UserName != claims.UserName {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	err := services.UpdatePost(post)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
+func DeletePost(w http.ResponseWriter, r *http.Request) {
+	tokenStatus, claims := validate_token(w, r)
+
+	if !tokenStatus {
+		redirectURL := "/"
+		http.Redirect(w, r, redirectURL, http.StatusMovedPermanently)
+		return
+	}
+
+	headerContentTtype := r.Header.Get("Content-Type")
+	if headerContentTtype != "application/json" {
+		w.WriteHeader(http.StatusUnsupportedMediaType)
+		return
+	}
+
+	var post model.Post
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&post)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if post.UserName != claims.UserName {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+	err = services.DeletePost(post)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
+func UpdatePostReaction(w http.ResponseWriter, r *http.Request) {
+	tokenStatus, claims := validate_token(w, r)
+
+	if !tokenStatus {
+		redirectURL := "/"
+		http.Redirect(w, r, redirectURL, http.StatusMovedPermanently)
+		return
+	}
+
+	headerContentTtype := r.Header.Get("Content-Type")
+	if headerContentTtype != "application/json" {
+		w.WriteHeader(http.StatusUnsupportedMediaType)
+		return
+	}
+
+	var post model.Post
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&post)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = services.UpdatePostReaction(claims.UserName, post)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}

@@ -1,14 +1,19 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Comment struct {
-	CommentID       int64     `json:"comment_id"`
-	CommentParentID int64     `json:"comment_parent_id"`
-	PostID          int64     `json:"post_id"`
-	UserID          int64     `json:"user_id"`
-	UserName        string    `json:"user_name"`
-	CommentContent  string    `json:"comment_content"`
-	CommentReaction string    `json:"comment_reaction"`
-	CommentDateTime time.Time `json:"comment_datetime"`
+	CommentID              primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	CommentParentID        primitive.ObjectID `json:"comment_parent_id,omitempty" bson:"comment_parent_id,omitempty"`
+	PostID                 primitive.ObjectID `json:"post_id,omitempty" bson:"post_id,omitempty"`
+	WallUserName           string             `json:"wall_user_name,omitempty" bson:"wall_user_name,omitempty"`
+	UserName               string             `json:"user_name,omitempty" bson:"user_name,omitempty"`
+	CommentContent         string             `json:"comment_content,omitempty" bson:"comment_content,omitempty"`
+	CommentReactionList    []string           `json:"comment_reaction,omitempty" bson:"comment_reaction,omitempty"`
+	CommentCreatedDateTime time.Time          `json:"comment_datetime,omitempty" bson:"comment_datetime,omitempty"`
+	CommentEditDateTime    time.Time          `json:"comment_edit_datetime,omitempty" bson:"comment_edit_datetime,omitempty"`
 }

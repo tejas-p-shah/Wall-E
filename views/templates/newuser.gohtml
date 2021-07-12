@@ -1,0 +1,33 @@
+<html>
+<head>
+<script>
+var data = { 
+    "bio": ""
+};
+function makeRequest()
+{
+    data.bio = document.forms["bioform"]["biotext"].value;
+
+    $.ajax({
+        type: "POST",
+        url: "/user/{{.User.UserName}}/bio",
+        data: data,
+        success: success,
+        dataType: dataType
+    });
+}
+</script>
+</head>
+<body>
+
+<h1>{{.User.UserName}}</h1>
+<h1>{{.User.UserEmail}}</h1>
+<h1>{{.User.UserFullName}}</h1>
+
+<form name="bioform" id="bioform" onsubmit="makeRequest()">
+<textarea name="biotext" id="biotext" form="bioform"></textarea>
+<input type="submit" value="Submit">
+</form>
+
+</body>
+</html>
