@@ -1,56 +1,49 @@
 package services
 
 import (
-	"fmt"
+	"time"
 
 	"github.com/tejas-p-shah/Wall-E/dao"
 	"github.com/tejas-p-shah/Wall-E/model"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func GetPostComment(PostID int64) (*model.Comment, error) {
+func GetPostComment(PostID primitive.ObjectID) ([]model.Comment, error) {
 	comments, err := dao.GetPostComments(PostID)
-
-	if err != nil {
-		return nil, err
+	for _, v := range comments {
+		v.CommentReactionCount = len(v.CommentReactionList)
 	}
-
-	return comments, nil
+	return comments, err
 }
 
-func UpdateComment(userName string, comment model.Comment) error {
+func UpdateComment(comment model.Comment) error {
 
-	if comment.UserName != userName {
-		return fmt.Errorf("user %s Does not have permissions", userName)
-	}
-
-	// Call DAO
-
-	return nil
+	comment.CommentEditDateTime = time.Now()
+	err := dao.UpdateComment(&comment)
+	return err
 }
 
-func DeleteComment(userName string, comment model.Comment) error {
+func DeleteComment(commentID primitive.ObjectID) error {
 
-	if comment.UserName != userName {
-		return fmt.Errorf("user %s Does not have permissions", userName)
+	err := dao.DeleteComment(commentID)
+	comments, _ := dao.GetCommentByKey("comment_parent_id", commentID)
+	for _, v := range comments {
+		dao.DeleteComment(v.CommentID)
 	}
-
-	// Call DAO
-
-	return nil
+	return err
 }
 
-func UpdateCommentReaction(userName string, comment model.Comment) error {
+func UpdateCommentReaction(userName string, commentID primitive.ObjectID, reactionValue int) error {
+	err := dao.UpdateCommentReaction(userName, commentID, reactionValue)
+	return err
+}
+
+func AddNewComment(userName string, comment model.Comment) (*mongo.InsertOneResult, error) {
 	comment.UserName = userName
+	comment.CommentCreatedDateTime = time.Now()
+	comment.CommentEditDateTime = time.Now()
 
-	// Call DAO
-
-	return nil
-}
-
-func AddNewComment(userName string, comment model.Comment) error {
-	comment.UserName = userName
-
-	// Call DAO
-
-	return nil
+	result, err := dao.AddNewComment(&comment)
+	return result, err
 }

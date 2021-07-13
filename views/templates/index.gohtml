@@ -1,3 +1,31 @@
-<h1>{{.Title}}</h1>
-<a href="/login/github/">LOGIN/REGISTER</a>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>E-Wall</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body style="background: rgba(150, 150, 150, 0.4); overflow-x:hidden;">
+     <nav class="row-fluid navbar navbar-inverse"  style="background-color: rgba(75, 75,75, 0.3 ) ;">
+        <div class="container-fluid">
+           <h3 style="color:blue;"><b>  Gslab Wall</b></h3>
+            {{/* <ul class="nav navbar-nav navbar-right">
+                <li><a href = "#"> LogOut</a></li>
+            </ul> */}}
+        </div>
+    </nav>
+    
+<div class = "justify-content-center row"  style="padding-top:10%; ">
+<form class=" justify-content-center w-25 text-center p-5" method="POST"  action= "/login/github/" style="background: rgba(150, 150, 150, 0.4); ">
+<input class="btn-primary btn " type="submit" style="color:cornsilk;" value = "LogIn/Register">
+<p>login/register with github</p>
+</form>
+</div>
+
+</body> 
+</html>

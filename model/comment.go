@@ -14,6 +14,8 @@ type Comment struct {
 	UserName               string             `json:"user_name,omitempty" bson:"user_name,omitempty"`
 	CommentContent         string             `json:"comment_content,omitempty" bson:"comment_content,omitempty"`
 	CommentReactionList    []string           `json:"comment_reaction,omitempty" bson:"comment_reaction,omitempty"`
+	CommentReactionCount   int                `json:"comment_reaction_count,omitempty" bson:"comment_reaction_count,omitempty"`
 	CommentCreatedDateTime time.Time          `json:"comment_datetime,omitempty" bson:"comment_datetime,omitempty"`
 	CommentEditDateTime    time.Time          `json:"comment_edit_datetime,omitempty" bson:"comment_edit_datetime,omitempty"`
+	subComments            []Comment
 }

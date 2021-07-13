@@ -6,6 +6,7 @@ import (
 
 	"github.com/tejas-p-shah/Wall-E/config"
 	"github.com/tejas-p-shah/Wall-E/model"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -17,12 +18,31 @@ var (
 	}
 )
 
-func GetUser(userEmail string) (*model.User, bool, error) {
-	if user := Users[userEmail]; user != nil {
-		return user, true, nil
+func GetUser(userEmail string) ([]model.User, bool, error) {
+	filter := bson.M{"user_email": userEmail}
+	user := []model.User{}
+	client, err := config.GetMongoClient()
+	if err != nil {
+		return nil, false, err
 	}
-
-	return nil, false, fmt.Errorf("user %v was not found", userEmail)
+	collection := client.Database(config.DB).Collection(config.USERS)
+	cur, findError := collection.Find(context.TODO(), filter)
+	if findError != nil {
+		return nil, false, findError
+	}
+	for cur.Next(context.TODO()) {
+		t := model.User{}
+		err := cur.Decode(&t)
+		if err != nil {
+			return nil, false, err
+		}
+		user = append(user, t)
+	}
+	cur.Close(context.TODO())
+	if len(user) == 0 {
+		return user, false, fmt.Errorf(mongo.ErrNoDocuments.Error())
+	}
+	return user, true, nil
 }
 
 func AddUser(user model.User) (*mongo.InsertOneResult, error) {
@@ -35,7 +55,7 @@ func AddUser(user model.User) (*mongo.InsertOneResult, error) {
 		return nil, err
 	}
 
-	collection := client.Database(config.DB).Collection(config.POSTS)
+	collection := client.Database(config.DB).Collection(config.USERS)
 	result, err := collection.InsertOne(context.TODO(), user)
 	if err != nil {
 		return nil, err

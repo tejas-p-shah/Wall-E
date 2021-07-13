@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/tejas-p-shah/Wall-E/model"
 	"github.com/tejas-p-shah/Wall-E/services"
 )
@@ -46,38 +47,46 @@ func SearchUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	headerContentTtype := r.Header.Get("Content-Type")
-	if headerContentTtype != "application/json" {
-		w.WriteHeader(http.StatusUnsupportedMediaType)
-		return
-	}
-	type searchStruct struct {
-		UserEmail string `json:"user_name"`
-	}
-	var userStruct searchStruct
+	params := mux.Vars(r)
 
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&userStruct)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	user, _, err := services.GetUser(userStruct.UserEmail)
+	user, _, err := services.GetUser(params["user_id"])
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("User Not Fond"))
+		w.Write([]byte(err.Error()))
 		return
+	}
+
+	posts, _ := services.GetUserPosts(user[len(user)-1].UserName)
+
+	var postComments []model.Comment
+
+	for _, v := range posts {
+		comments, _ := services.GetPostComment(v.PostID)
+		postComments = append(postComments, comments...)
 	}
 
 	type Data struct {
 		User     *model.User
-		Posts    *model.Post
-		Comments *model.Comment
+		Posts    []model.Post
+		Comments []model.Comment
 	}
 
-	data := &Data{User: user}
+	for _, value := range postComments {
+		for _, postvalue := range posts {
+			fmt.Println(value.PostID, " ", postvalue.PostID, " ", (value.PostID == postvalue.PostID))
+			if value.PostID == postvalue.PostID {
+				postvalue.Comments = append(postvalue.Comments, value)
+				fmt.Println("COMMENTS :: ", postvalue.Comments)
+			}
+		}
 
-	t := template.Must(template.ParseFiles("views/templates/home.gohtml"))
+	}
+
+	fmt.Println("new : ", posts)
+	data := &Data{User: &user[len(user)-1], Posts: posts, Comments: postComments}
+
+	t := template.Must(template.ParseFiles("views/templates/wall.gohtml"))
 	t.Execute(w, data)
+	// w.WriteHeader(http.StatusOK)
+	// json.NewEncoder(w).Encode(data)
 }

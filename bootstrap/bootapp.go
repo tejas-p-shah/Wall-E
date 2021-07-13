@@ -29,13 +29,13 @@ func setRouters() {
 	router.HandleFunc("/wall/{wall_id}/post", controllers.AddNewPost).Methods("POST")
 	router.HandleFunc("/wall/{wall_id}/post/{post_id}", controllers.UpdatePost).Methods("PUT")
 	router.HandleFunc("/wall/{wall_id}/post/{post_id}", controllers.DeletePost).Methods("DELETE")
-	router.HandleFunc("/wall/{wall_id}/post/{post_id}/reaction", controllers.UpdatePostReaction).Methods("PUT")
+	router.HandleFunc("/wall/{wall_id}/post/{post_id}/{reaction}", controllers.UpdatePostReaction).Methods("PUT")
 
 	//Comment Routers
 	router.HandleFunc("/wall/{wall_id}/post/{post_id}/comment", controllers.AddNewComment).Methods("POST")
 	router.HandleFunc("/wall/{wall_id}/post/{post_id}/comment/{comment_id}", controllers.UpdateComment).Methods("PUT")
 	router.HandleFunc("/wall/{wall_id}/post/{post_id}/comment/{comment_id}", controllers.DeleteComment).Methods("DELETE")
-	router.HandleFunc("/wall/{wall_id}/post/{post_id}/comment/{comment_id}/reaction", controllers.UpdateCommentReaction).Methods("PUT")
+	router.HandleFunc("/wall/{wall_id}/post/{post_id}/comment/{comment_id}/{reaction}", controllers.UpdateCommentReaction).Methods("PUT")
 
 	http.Handle("/", router)
 

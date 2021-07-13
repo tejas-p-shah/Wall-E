@@ -12,7 +12,7 @@ import (
 var jwtKey = []byte("secret_key")
 
 func setToken(w http.ResponseWriter, r *http.Request, email string, username string) {
-	expirationTime := time.Now().Add(time.Minute * 5) // Set expiration time to 5 mins
+	expirationTime := time.Now().Add(time.Minute * 30) // Set expiration time to 5 mins
 	claims := &model.Claims{
 		UserEmail: email,
 		UserName:  username,
@@ -81,7 +81,7 @@ func refreshToken(w http.ResponseWriter, claims *model.Claims) {
 		return
 	}
 
-	expirationTime := time.Now().Add(time.Minute * 5)
+	expirationTime := time.Now().Add(time.Minute * 30)
 
 	claims.ExpiresAt = expirationTime.Unix()
 

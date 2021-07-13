@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func GetUser(userEmail string) (*model.User, bool, error) {
+func GetUser(userEmail string) ([]model.User, bool, error) {
 	user, foundStatus, err := dao.GetUser(userEmail)
 
 	if err != nil {

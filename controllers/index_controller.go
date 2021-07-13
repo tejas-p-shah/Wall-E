@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -68,7 +67,7 @@ func LoggedinHandler(w http.ResponseWriter, r *http.Request, githubData string) 
 
 	setToken(w, r, githubDataTokenResp.UserEmail, githubDataTokenResp.UserName)
 
-	redirectURL := "/home"
+	redirectURL := "/wall/" + githubDataTokenResp.UserName
 	http.Redirect(w, r, redirectURL, http.StatusMovedPermanently)
 }
 
@@ -93,19 +92,26 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte(err.Error()))
-		log.Fatal((err.Error()))
+		// log.Fatal((err.Error()))
 		return
 	}
 
-	// posts, _ := services.GetUserPosts(user.UserName)
+	posts, _ := services.GetUserPosts(user[len(user)-1].UserName)
+
+	var postComments []model.Comment
+
+	for _, v := range posts {
+		comments, _ := services.GetPostComment(v.PostID)
+		postComments = append(postComments, comments...)
+	}
 
 	type Data struct {
 		User     *model.User
-		Posts    *model.Post
-		Comments *model.Comment
+		Posts    []model.Post
+		Comments []model.Comment
 	}
 
-	data := &Data{User: user}
+	data := &Data{User: &user[len(user)-1], Posts: posts, Comments: postComments}
 
 	t := template.Must(template.ParseFiles("views/templates/home.gohtml"))
 	t.Execute(w, data)
