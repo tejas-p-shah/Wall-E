@@ -1,4 +1,4 @@
-package services
+package authenticators
 
 import (
 	"bytes"
@@ -8,6 +8,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/tejas-p-shah/Wall-E/controllers"
 )
 
 //Utils
@@ -96,24 +98,6 @@ func getGithubData(accessToken string) string {
 
 // Handler functions
 
-func loggedinHandler(w http.ResponseWriter, r *http.Request, githubData string) {
-	if githubData == "" {
-		fmt.Fprintf(w, "UNAUTHORIZED!!")
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-
-	var prettyJson bytes.Buffer
-
-	parserr := json.Indent(&prettyJson, []byte(githubData), "", "\t")
-	if parserr != nil {
-		log.Panic("JSON parse error!")
-	}
-
-	fmt.Fprintf(w, string(prettyJson.Bytes()))
-}
-
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, `<a href="/login/github/">LOGIN</a>`)
 }
@@ -138,7 +122,7 @@ func githubCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	githubData := getGithubData(githubAccessToken)
 
-	loggedinHandler(w, r, githubData)
+	controllers.LoggedinHandler(w, r, githubData)
 
 }
 
@@ -149,7 +133,7 @@ func Init_Github_Authenticator() {
 	http.HandleFunc("/login/github/callback", githubCallbackHandler)
 
 	http.HandleFunc("/loggedin", func(w http.ResponseWriter, r *http.Request) {
-		loggedinHandler(w, r, "")
+		controllers.LoggedinHandler(w, r, "")
 	})
 
 }
