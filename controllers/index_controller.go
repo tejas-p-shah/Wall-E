@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"sort"
 
 	"github.com/gorilla/mux"
 	"github.com/tejas-p-shah/Wall-E/dao"
@@ -43,6 +44,8 @@ func LogOutHandler(w http.ResponseWriter, r *http.Request) {
 			Value: "",
 			Path:  "/",
 		})
+	redirectURL := "/"
+	http.Redirect(w, r, redirectURL, http.StatusMovedPermanently)
 }
 
 func LoggedinHandler(w http.ResponseWriter, r *http.Request, githubData string) {
@@ -105,15 +108,20 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		postComments = append(postComments, comments...)
 	}
 
+	sort.Slice(postComments, func(i, j int) bool {
+		return postComments[i].CommentParentID.String() < postComments[j].CommentParentID.String()
+	})
+
 	type Data struct {
 		User     *model.User
 		Posts    []model.Post
 		Comments []model.Comment
 	}
 
+	// fmt.Println("new : ", postComments)
 	data := &Data{User: &user[len(user)-1], Posts: posts, Comments: postComments}
 
-	t := template.Must(template.ParseFiles("views/templates/home.gohtml"))
+	t := template.Must(template.ParseFiles("views/templates/wall.gohtml"))
 	t.Execute(w, data)
 
 }

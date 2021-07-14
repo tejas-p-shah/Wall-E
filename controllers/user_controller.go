@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"sort"
 
 	"github.com/gorilla/mux"
 	"github.com/tejas-p-shah/Wall-E/model"
@@ -65,24 +65,17 @@ func SearchUser(w http.ResponseWriter, r *http.Request) {
 		postComments = append(postComments, comments...)
 	}
 
+	sort.Slice(postComments, func(i, j int) bool {
+		return postComments[i].CommentParentID.String() < postComments[j].CommentParentID.String()
+	})
+
 	type Data struct {
 		User     *model.User
 		Posts    []model.Post
 		Comments []model.Comment
 	}
 
-	for _, value := range postComments {
-		for _, postvalue := range posts {
-			fmt.Println(value.PostID, " ", postvalue.PostID, " ", (value.PostID == postvalue.PostID))
-			if value.PostID == postvalue.PostID {
-				postvalue.Comments = append(postvalue.Comments, value)
-				fmt.Println("COMMENTS :: ", postvalue.Comments)
-			}
-		}
-
-	}
-
-	fmt.Println("new : ", posts)
+	// fmt.Println("new : ", postComments)
 	data := &Data{User: &user[len(user)-1], Posts: posts, Comments: postComments}
 
 	t := template.Must(template.ParseFiles("views/templates/wall.gohtml"))

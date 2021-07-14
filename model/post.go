@@ -16,5 +16,4 @@ type Post struct {
 	PostCreatedDateTime time.Time          `json:"post_created_datetime,omitempty" bson:"post_created_datetime,omitempty"`
 	PostEditedDateTime  time.Time          `json:"post_edited_datetime,omitempty" bson:"post_edited_datetime,omitempty"`
 	PostLikeCount       int                `json:"post_reaction_count,omitempty" bson:"post_reaction_count,omitempty"`
-	Comments            []Comment
 }

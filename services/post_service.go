@@ -11,9 +11,10 @@ import (
 
 func GetUserPosts(userName string) ([]model.Post, error) {
 	posts, err := dao.GetUserPosts(userName)
-	for _, v := range posts {
-		v.PostLikeCount = len(v.PostLikeList)
-	}
+	// for _, v := range posts {
+	// 	v.PostLikeCount = len(v.PostLikeList)
+	// 	fmt.Println(v.PostLikeCount)
+	// }
 	return posts, err
 }
 

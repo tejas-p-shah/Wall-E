@@ -20,6 +20,7 @@ func setRouters() {
 	router.HandleFunc("/logout", controllers.LogOutHandler).Methods("GET")
 	router.HandleFunc("/test/wall/{wall_id}/post/{post_id}", controllers.TestHandler).Methods("GET")
 	router.HandleFunc("/test", controllers.TestHandler).Methods("POST")
+	router.HandleFunc("/user/email", controllers.TestHandler).Methods("POST")
 
 	// User Routers
 	router.HandleFunc("/user/{user_id}", controllers.GetUserProfile).Methods("GET")

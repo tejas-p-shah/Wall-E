@@ -58,6 +58,7 @@ func GetPostComments(PostID primitive.ObjectID) ([]model.Comment, error) {
 		if err != nil {
 			return comments, err
 		}
+		t.CommentReactionCount = len(t.CommentReactionList)
 		comments = append(comments, t)
 	}
 	cur.Close(context.TODO())
@@ -114,12 +115,12 @@ func DeleteComment(commentID primitive.ObjectID) error {
 
 func UpdateCommentReaction(userName string, commentID primitive.ObjectID, reactionValue int) error {
 
-	comments, err := GetCommentByKey("_id", commentID)
+	comments, _ := GetCommentByKey("_id", commentID)
 
 	if reactionValue != 0 {
 		for _, ele := range comments[0].CommentReactionList {
 			if ele == userName {
-				break
+				return nil
 			}
 		}
 		comments[0].CommentReactionList = append(comments[0].CommentReactionList, userName)

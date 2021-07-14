@@ -11,9 +11,10 @@ import (
 
 func GetPostComment(PostID primitive.ObjectID) ([]model.Comment, error) {
 	comments, err := dao.GetPostComments(PostID)
-	for _, v := range comments {
-		v.CommentReactionCount = len(v.CommentReactionList)
-	}
+	// for _, v := range comments {
+	// 	v.CommentReactionCount = len(v.CommentReactionList)
+	// 	fmt.Println(v.CommentReactionCount)
+	// }
 	return comments, err
 }
 

@@ -1,113 +1,481 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>E-Wall</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-    <style>
-div.ext1{
-  background-color: lightblue;
-  width: 500px;
-  height: 600px;
-  overflow: auto;
-}
+<title>GSLAB Wall-E</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<style>
 
 </style>
+<script type="text/javascript">
 
-</head>
-<h1>POSTS</h1>
-<h1>{{.Posts}}</h1>
-<h1>COMMENTS</h1>
-<h1>{{.Comments}}</h1>
-<body style="background: rgba(150, 150, 150, 0.4); overflow-x:hidden;">
-     <nav class="row-fluid navbar navbar-inverse"  style="background-color: rgba(75, 75,75, 0.3 ) ;">
-        <div class="container-fluid">
-           <h3 style="color:blue;"><b>  Gslab Wall</b></h3>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href = ""> LogOut</a></li>
-            </ul>
-        </div>
-    </nav>
+
+{{/* ----------------------------------------------------------------------------------------------------------------- */}}
+
+function logout() {
+    var allCookies = document.cookie.split(";");
+    for (var i=0; i < allCookies.length; i++)
+        document.cookie = allCookies[i] + "=;expires=" + new Date(0).toUTCString();
+    window.location.href = "/logout";
+};
+
+function searchUser() {
+    url= " http://localhost:8099/search/" + document.getElementById("searchuser").value;
+    window.location.href = url;
+};
+
+function addNewPost(wallusername) {
+  var xhr = new XMLHttpRequest();
+  var url = "/wall/" + wallusername + "/post";
+  xhr.open("POST", url, true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        var json = JSON.parse(xhr.responseText);
+        console.log(json);
+    }
+  };
+  var data = JSON.stringify({"post_title": document.getElementById("title").value, "post_content": document.getElementById("content").value});
+  xhr.send(data);
+};
+
+
+function updatePost(wallusername, postUsername,postID, index) {
+  postID = postID.replace("ObjectID(\"", "").replace("\")", "");
+  var xhr = new XMLHttpRequest();
+  var url = "/wall/" + wallusername + "/post/" + postID;
+
+  xhr.open("PUT", url, true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        {{/* var json = JSON.parse(xhr.responseText); */}}
+        console.log(xhr.responseText);
+    }
+  };
+  var data = JSON.stringify({"user_name": postUsername, "post_title": document.getElementById("updatetitle-"+index).value, "post_content": document.getElementById("updatecontent-"+index).value});
+  xhr.send(data);
+};
+
+
+function addNewComment( wallusername, postID, commentParentID, index) {
+  postID = postID.replace("ObjectID(\"", "").replace("\")", "");
+  commentParentID = commentParentID.replace("ObjectID(\"", "").replace("\")", "");
+  console.log(postID);
+  console.log(commentParentID);
+  var xhr = new XMLHttpRequest();
+  var url = "/wall/" + wallusername + "/post/" + postID + "/comment" ;
+  console.log(url);
+  xhr.open("POST", url, true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        var json = JSON.parse(xhr.responseText);
+        console.log(json);
+    }
+  };
+
+  var data = JSON.stringify({"comment_content": document.getElementById("comment-"+index).value, "comment_parent_id": commentParentID});
+  xhr.send(data);
+};
+
+
+function addRespComment( respindex, wallusername, postID, commentParentID) {
+  postID = postID.replace("ObjectID(\"", "").replace("\")", "");
+  commentParentID = commentParentID.replace("ObjectID(\"", "").replace("\")", "");
+  console.log(postID);
+  console.log(commentParentID);
+  console.log(respindex);
+  var xhr = new XMLHttpRequest();
+  var url = "/wall/" + wallusername + "/post/" + postID + "/comment" ;
+  console.log(url);
+  xhr.open("POST", url, true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        var json = JSON.parse(xhr.responseText);
+        console.log(json);
+    }
+  };
+
+  var data = JSON.stringify({"comment_content": document.getElementById("respcomment-"+respindex).value, "comment_parent_id": commentParentID});
+  xhr.send(data);
+};
+
+
+function deletePost(wallusername, postUsername, postID) {
+  postID = postID.replace("ObjectID(\"", "").replace("\")", "");
+  var xhr = new XMLHttpRequest();
+  var url = "/wall/" + wallusername + "/post/" + postID  ;
+  console.log(url);
+  xhr.open("DELETE", url, true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        var json = JSON.parse(xhr.responseText);
+        console.log(json);
+    }
+  };
+  var data = JSON.stringify({"user_name": postUsername});
+  xhr.send(data);
+};
+
+
+function deletecomment(wallusername, postID, commentID, commentUsername) {
+postID = postID.replace("ObjectID(\"", "").replace("\")", "");
+commentID = commentID.replace("ObjectID(\"", "").replace("\")", "");
+  var xhr = new XMLHttpRequest();
+  var url = "/wall/" + wallusername + "/post/" + postID +"/comment/" + commentID  ;
+  console.log(url);
+  xhr.open("DELETE", url, true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        var json = JSON.parse(xhr.responseText);
+        console.log(json);
+    }
+  };
+  var data = JSON.stringify({"user_name": commentUsername});
+  xhr.send(data);
+};
+
+function likecomment(wallusername, postID, commentID) {
+  commentID = commentID.replace("ObjectID(\"", "").replace("\")", "");
+  postID = postID.replace("ObjectID(\"", "").replace("\")", "");
+  var xhr = new XMLHttpRequest();
+  var url = "/wall/" + wallusername + "/post/" + postID + "/comment/" + commentID + "/1" ;
+  console.log(url);
+  xhr.open("PUT", url, true);
+  {{/* xhr.setRequestHeader("Content-Type", "application/json"); */}}
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        var json = JSON.parse(xhr.responseText);
+        console.log(json);
+    }
+  };
+  {{/* var data = JSON.stringify({"user_name": {{.User.UserName}}}); */}}
+  xhr.send();
+};
+
+function unlikecomment(wallusername, postID, commentID) {
+  commentID = commentID.replace("ObjectID(\"", "").replace("\")", "");
+  postID = postID.replace("ObjectID(\"", "").replace("\")", "");
+  var xhr = new XMLHttpRequest();
+  var url = "/wall/" + wallusername + "/post/" + postID + "/comment/" + commentID + "/0" ;
+  console.log(url);
+  xhr.open("PUT", url, true);
+  {{/* xhr.setRequestHeader("Content-Type", "application/json"); */}}
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        var json = JSON.parse(xhr.responseText);
+        console.log(json);
+    }
+  };
+  {{/* var data = JSON.stringify({"user_name": {{.User.UserName}}}); */}}
+  xhr.send();
+};
+
+
+function likepost(wallusername, postID) {
+  postID = postID.replace("ObjectID(\"", "").replace("\")", "");
+  var xhr = new XMLHttpRequest();
+  var url = "/wall/" + wallusername + "/post/" + postID + "/1" ;
+  console.log(url);
+  xhr.open("PUT", url, true);
+  {{/* xhr.setRequestHeader("Content-Type", "application/json"); */}}
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        var json = JSON.parse(xhr.responseText);
+        console.log(json);
+    }
+  };
+  {{/* var data = JSON.stringify({"user_name": {{.User.UserName}}}); */}}
+  xhr.send();
+};
+
+function unlikepost(wallusername, postID) {
+  postID = postID.replace("ObjectID(\"", "").replace("\")", "");
+  var xhr = new XMLHttpRequest();
+  var url = "/wall/" + wallusername + "/post/" + postID + "/0" ;
+  console.log(url);
+  xhr.open("PUT", url, true);
+  {{/* xhr.setRequestHeader("Content-Type", "application/json"); */}}
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        var json = JSON.parse(xhr.responseText);
+        console.log(json);
+    }
+  };
+  {{/* var data = JSON.stringify({"user_name": {{.User.UserName}}}); */}}
+  xhr.send();
+};
+
+
+function updateComment(wallusername, postID,commentID,commentParentID, commentUsername, index) {
+postID = postID.replace("ObjectID(\"", "").replace("\")", "");
+commentID = commentID.replace("ObjectID(\"", "").replace("\")", "");
+  var xhr = new XMLHttpRequest();
+  var url = "/wall/" + wallusername + "/post/" + postID + "/comment/" + commentID;
+
+  xhr.open("PUT", url, true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        {{/* var json = JSON.parse(xhr.responseText); */}}
+        console.log(xhr.responseText);
+    }
+  };
+  var data = JSON.stringify({"user_name": commentUsername, "comment_content": document.getElementById("updatecommenttext-"+index).value});
+  xhr.send(data);
+};
+
+</script>
+<body>
+<div class="container">
+<form id="logoutform">
+<input type="button" value="LOGOUT" onclick="logout();" />
+</form>
+<h3>Search User using Email : </h3>
+<form id="serchForm">
+<label for="searchuser">Email :</label> &nbsp;
+<input type="text" id="searchuser" name="searchuser"> &nbsp;
+<input type="button" value="Search" onclick="searchUser();" />
+</form>
+<hr>
+<h2> Welcome to Wall of : {{.User.UserFullName}} </h2> 
+<p> 
+ UserName :{{.User.UserName}} &nbsp; Email : {{.User.UserEmail}}
+</p><br>
+{{ $wallposts := .Posts }}
+{{ $postcomments := .Comments }}
+<h1> Posts </h1>
+<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#NewPostModal">Add New Post</button>
+
+<!-- AddPostModal -->
+  <div class="modal fade" id="NewPostModal" role="dialog">
+    <div class="modal-dialog">
     
-<div class = "justify-content-center row w-75 border"  style="padding-top:10%; ">
-<form id="main">
-<h1><strong>{{.User.UserName}}</strong></h1>
-<h3><strong>{{.User.UserFullName}}</strong></h3>
-<h3><i><u>{{.User.UserEmail}}</u></i></h3>
-
-<button type="submit" class="btn btn-info btn-sm" data-toggle="collapse" data-target="#addpost">new post</button>
-
-<div id = "addpost" class = " row form-groups justify-content-center">
-<form  class = "row col-sm-6 text center " id="postdata"  style="border-width:5px;border-style:ridge;">
-<div class="col-sm-7"> <label><h2><b>{{.Posts.WallUserName}}</b></h2></label></div>
-<div class="col-sm-7"> <textarea id="postcontent" name="postcontent" maxlength="255">
-  </textarea>
-</div>
-<input type="submit" class="btn" name="postdata" value="Post" onclick="addNewPost()">
-</form>
-</div>
-{{range .Posts}}
-<div class = " row form-groups justify-content-center" >
-                <form  class = "row col-sm-6 text center " id="post"   style="border-width:5px;border-style:ridge;">
-               <div class="col-sm-7"> <label><h2><b>{{.UserName}}</b></h2></label></div>
-                <div class="col-sm-7"> <label><h2><b>{{.PostTitle}}</b></h2></label></div>
-                <div class="col-sm-7"> <textarea id="pcontent" name="post" readonly>
-                {{.PostContent}}
-  </textarea>
-</div>
- <div class="col-sm-1">
-  {{/* <label><small>{{.PostLikeList}}</small> </label> */}}
-  </div>
- <div class="col-sm-3">
- <label><small>{{.PostCreatedDateTime}}</small></label></div>
-</div>
-<div class="ext1">
-{{range .Comments}}
-<div>
-    <div class="col-sm-11"> <label><h4><b>{{.UserName}} :</b></h4> {{.CommentContent}}</label></div>
-    <div class="col-sm-1"><label><small></small> </label></div>    
-    <div class="col-sm-3 right"><label><small>{{.PostCreatedDateTime}}</small></label></div>
-    {{ if ne .SubComments nil}}
-        {{range .SubComments}}
-        <div>
-            <div class="col-sm-11"> <label><h4><b>{{.UserName}} :</b></h4> {{.CommentContent}}</label></div>
-            <div class="col-sm-1"><label><small></small> </label></div>    
-            <div class="col-sm-3 right"><label><small>{{.PostCreatedDateTime}}</small></label></div>
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
         </div>
-        {{end}}
-    {{end}}
-    <button type="submit" class="btn btn-info btn-sm" data-toggle="collapse" data-target="#newsubcomment">new post</button>
+        <div class="modal-body">
+          <form id="newPost">
+            <label for="title">Title :</label> &nbsp;
+            <input type="text" id="title" name="title">
+            <label for="content">Content :</label> &nbsp;
+            <input type="text" id="content" name="content">
+            <input type="button" value="Add Post" onclick="addNewPost({{.User.UserName}});" />
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
 
-<div id = "newsubcomment" class = " row form-groups justify-content-center">
-<form  class = "row col-sm-6 text " id="subcomment" form="main"  style="border-width:5px;border-style:ridge;">
-<div class="col-sm-7"> <label><h2><b>{{.UserName}}</b></h2></label></div>
-<div class="col-sm-7"> <textarea id="postcomment" name="postcomment" maxlength="255">
-  </textarea>
-</div>
-<input type="submit" class="btn" name="postsubcomment" value="+" onclick="addNewSubComment()">
-</form>
-</div>
-</div>
+<p>
+
+
+{{range $index, $post := $wallposts}}
+
+
+<!-- UpdatePostModal -->
+  <div class="modal fade" id="UpdatePostModal-{{$index}}" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <form id="updatePost">
+            <label for="title">Title :</label> &nbsp;
+            <input type="text" id="updatetitle-{{$index}}" value="{{$post.PostTitle}}" name="updatetitle-{{$index}}">
+            <label for="content">Content :</label> &nbsp;
+            <input type="text" id="updatecontent-{{$index}}" value="{{$post.PostContent}}" name="updatecontent-{{$index}}">
+            <input type="button" value="Update Post" onclick="updatePost({{$post.WallUserName}},{{$post.UserName}},{{$post.PostID.String}},{{$index}})" />
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+
+
+<!-- AddCommentModal -->
+  <div class="modal fade" id="NewCommentModal-{{$index}}" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <form id="newComment">
+            <label for="comment">Comment :</label> &nbsp;
+            <input type="text" id="comment-{{$index}}" name="comment-{{$index}}">
+            <input type="button" value="Add Comment" onclick="addNewComment({{$post.WallUserName}},{{$post.PostID.String}}, '',{{$index}} );" />
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+
 {{end}}
-</div>
-<button type="submit" class="btn btn-info btn-sm" data-toggle="collapse" data-target="#newcomment">new post</button>
 
-<div id = "newcomment" class = " row form-groups justify-content-center">
-<form  class = "row col-sm-6 text " id="comment" form="main"  style="border-width:5px;border-style:ridge;">
-<div class="col-sm-7"> <label><h2><b>{{.Posts.UserName}}</b></h2></label></div>
-<div class="col-sm-7"> <textarea id="postcomment" name="postcomment" maxlength="255">
-  </textarea>
+
+{{ range $index, $post := $wallposts }}
+
+<hr>
+</p>
+
+<div class="card" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">{{$post.PostTitle}}</h5>
+    <h5 class="card-title">Likes : {{$post.PostLikeCount}}</h5>
+    <form method ="PUT" id="reactpost">
+      <input type="button" value="like" onclick="likepost({{$post.WallUserName}},{{$post.PostID.String}});" />
+      <input type="button" value="unlike" onclick="unlikepost({{$post.WallUserName}},{{$post.PostID.String}});" />
+    </form>
+    <h5 class="card-title">Username : {{$post.UserName}} &nbsp;&nbsp;&nbsp; Date : {{$post.PostCreatedDateTime}}</h5>
+    <p class="card-text">{{$post.PostContent}}</p>
+  </div>
+
+
+
+
+  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#NewCommentModal-{{$index}}">Add New Comment</button>
+  <div class="card-body">
+    <form id="updatepost">
+      <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#UpdatePostModal-{{$index}}">Update Post</button>
+    </form>
+    <form id="deletepost">
+      <input type="button" value="Delete Post" onclick="deletePost({{$post.WallUserName}},{{$post.UserName}},{{$post.PostID.String}});" />
+    </form>
+
+
+
+
+  <ul class="list-group list-group-flush">
+  {{ range $commentIndex,$comment := $postcomments }}
+  {{ if eq $comment.PostID.String $post.PostID.String  }}
+
+
+  <!-- UpdateCommentModal -->
+  <div class="modal fade" id="UpdateCommentModal-{{$commentIndex}}" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <form id="updateCommentForm">
+            <label for="comment">Comment :</label> &nbsp;
+            <input type="text" id="updatecommenttext-{{$commentIndex}}" value="{{$comment.CommentContent}}" name="updatecommenttext-{{$commentIndex}}">
+            <input type="button" value="Update" onclick="updateComment({{$post.WallUserName}},{{$post.PostID.String}},{{$comment.CommentID.String}},{{$comment.CommentParentID.String}},{{$comment.UserName}},{{$commentIndex}});" />
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+
+
+  
+    <li class="list-group-item">{{$comment.UserName}} :  {{$comment.CommentContent}} (Likes : {{$comment.CommentReactionCount}})</li>
+    <form method ="PUT" id="reactcomment">
+      <input type="button" value="like" onclick="likecomment({{$post.WallUserName}},{{$post.PostID.String}},{{$comment.CommentID.String}});" />
+      <input type="button" value="unlike" onclick="unlikecomment({{$post.WallUserName}},{{$post.PostID.String}},{{$comment.CommentID.String}});" />
+    </form>
+    <button type="button" class="" data-toggle="modal" data-target="#UpdateCommentModal-{{$commentIndex}}">Update comment</button>
+    <button type="button" class="" data-toggle="modal" data-target="#RespondCommentModal-{{$commentIndex}}">Respond to this comment</button>
+    <form id="deletecomment">
+      <input type="button" value="Delete Comment" onclick="deletecomment({{$post.WallUserName}},{{$post.PostID.String}},{{$comment.CommentID.String}},{{$comment.UserName}});" />
+    </form>
+
+    
+    
+    <!-- RespondCommentModal -->
+  <div class="modal fade" id="RespondCommentModal-{{$commentIndex}}" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <form id="respComment-{{$commentIndex}}">
+            <label for="respcomment-{{$commentIndex}}">Comment :</label> &nbsp;
+            <input type="text" id="respcomment-{{$commentIndex}}" name="respcomment-{{$commentIndex}}">
+            <input type="button" value="Respond" onclick="addRespComment({{$commentIndex}}, {{$post.WallUserName}}, {{$post.PostID.String}}, {{$comment.CommentID.String}}, '');" />
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+    
+    
+   
+
+
+  {{end}}
+
+  
+
+
+
+  
+
+{{end}}
+
+  </ul>
+
+
+  </div>
 </div>
-<input type="submit" class="btn" name="postcomment" value="Post" onclick="addNewComment()">
-</form>
-</div>
-</form>
- {{end}}
- </form>
+
+
+
+{{end}}
+<hr>
 </div>
 </body>
-</html> 
+</html>
+ 
+

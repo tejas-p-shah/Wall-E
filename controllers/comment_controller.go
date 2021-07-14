@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -15,19 +14,19 @@ import (
 func AddNewComment(w http.ResponseWriter, r *http.Request) {
 
 	tokenStatus, claims := validate_token(w, r)
-	fmt.Println("0")
+
 	if !tokenStatus {
 		redirectURL := "/"
 		http.Redirect(w, r, redirectURL, http.StatusMovedPermanently)
 		return
 	}
-	fmt.Println("1")
+
 	headerContentTtype := r.Header.Get("Content-Type")
 	if headerContentTtype != "application/json" {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
 		return
 	}
-	fmt.Println("2")
+
 	params := mux.Vars(r)
 	var comment model.Comment
 	_ = json.NewDecoder(r.Body).Decode(&comment)
@@ -38,14 +37,14 @@ func AddNewComment(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	fmt.Println("3")
+
 	result, err := services.AddNewComment(claims.UserName, comment)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(`{ "message": "` + err.Error() + `" }`))
 		return
 	}
-	fmt.Println("4")
+
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(result)
 }
@@ -74,7 +73,15 @@ func UpdateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := services.UpdateComment(comment)
+	params := mux.Vars(r)
+	objectID, err := primitive.ObjectIDFromHex(params["comment_id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	comment.CommentID = objectID
+	err = services.UpdateComment(comment)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -132,11 +139,11 @@ func UpdateCommentReaction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	headerContentTtype := r.Header.Get("Content-Type")
-	if headerContentTtype != "application/json" {
-		w.WriteHeader(http.StatusUnsupportedMediaType)
-		return
-	}
+	// headerContentTtype := r.Header.Get("Content-Type")
+	// if headerContentTtype != "application/json" {
+	// 	w.WriteHeader(http.StatusUnsupportedMediaType)
+	// 	return
+	// }
 
 	params := mux.Vars(r)
 	objectID, err := primitive.ObjectIDFromHex(params["comment_id"])

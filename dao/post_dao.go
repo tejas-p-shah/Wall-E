@@ -2,7 +2,6 @@ package dao
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/tejas-p-shah/Wall-E/config"
 	"github.com/tejas-p-shah/Wall-E/model"
@@ -42,7 +41,6 @@ func GetPostByID(postID primitive.ObjectID) ([]model.Post, error) {
 }
 
 func GetUserPosts(wallID string) ([]model.Post, error) {
-	fmt.Println(wallID)
 	filter := bson.M{"wall_user_name": wallID}
 	posts := []model.Post{}
 	client, err := config.GetMongoClient()
@@ -64,12 +62,12 @@ func GetUserPosts(wallID string) ([]model.Post, error) {
 			// fmt.Errorf(err.Error())
 			return posts, err
 		}
+		t.PostLikeCount = len(t.PostLikeList)
 		posts = append(posts, t)
 	}
 	// once exhausted, close the cursor
 	cur.Close(context.TODO())
 	if len(posts) == 0 {
-		fmt.Println(len(posts))
 		return posts, mongo.ErrNoDocuments
 	}
 	return posts, nil
@@ -122,12 +120,12 @@ func DeletePost(postID primitive.ObjectID) error {
 
 func UpdatePostReaction(userName string, postID primitive.ObjectID, reactionValue int) error {
 
-	posts, err := GetPostByID(postID)
+	posts, _ := GetPostByID(postID)
 
 	if reactionValue != 0 {
 		for _, ele := range posts[0].PostLikeList {
 			if ele == userName {
-				break
+				return nil
 			}
 		}
 		posts[0].PostLikeList = append(posts[0].PostLikeList, userName)

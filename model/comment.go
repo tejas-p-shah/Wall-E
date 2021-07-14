@@ -17,5 +17,4 @@ type Comment struct {
 	CommentReactionCount   int                `json:"comment_reaction_count,omitempty" bson:"comment_reaction_count,omitempty"`
 	CommentCreatedDateTime time.Time          `json:"comment_datetime,omitempty" bson:"comment_datetime,omitempty"`
 	CommentEditDateTime    time.Time          `json:"comment_edit_datetime,omitempty" bson:"comment_edit_datetime,omitempty"`
-	subComments            []Comment
 }
