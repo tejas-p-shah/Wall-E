@@ -35,6 +35,7 @@ function addNewPost(wallusername) {
   xhr.setRequestHeader("Content-Type", "application/json");
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status === 200) {
+        window.location.reload();
         var json = JSON.parse(xhr.responseText);
         console.log(json);
     }
@@ -53,6 +54,7 @@ function updatePost(wallusername, postUsername,postID, index) {
   xhr.setRequestHeader("Content-Type", "application/json");
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status === 200) {
+        window.location.reload();
         {{/* var json = JSON.parse(xhr.responseText); */}}
         console.log(xhr.responseText);
     }
@@ -74,6 +76,7 @@ function addNewComment( wallusername, postID, commentParentID, index) {
   xhr.setRequestHeader("Content-Type", "application/json");
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status === 200) {
+        window.location.reload();
         var json = JSON.parse(xhr.responseText);
         console.log(json);
     }
@@ -97,6 +100,7 @@ function addRespComment( respindex, wallusername, postID, commentParentID) {
   xhr.setRequestHeader("Content-Type", "application/json");
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status === 200) {
+        window.location.reload();
         var json = JSON.parse(xhr.responseText);
         console.log(json);
     }
@@ -116,6 +120,7 @@ function deletePost(wallusername, postUsername, postID) {
   xhr.setRequestHeader("Content-Type", "application/json");
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status === 200) {
+        window.location.reload();
         var json = JSON.parse(xhr.responseText);
         console.log(json);
     }
@@ -135,6 +140,7 @@ commentID = commentID.replace("ObjectID(\"", "").replace("\")", "");
   xhr.setRequestHeader("Content-Type", "application/json");
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status === 200) {
+        window.location.reload();
         var json = JSON.parse(xhr.responseText);
         console.log(json);
     }
@@ -153,6 +159,7 @@ function likecomment(wallusername, postID, commentID) {
   {{/* xhr.setRequestHeader("Content-Type", "application/json"); */}}
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status === 200) {
+        window.location.reload();
         var json = JSON.parse(xhr.responseText);
         console.log(json);
     }
@@ -171,6 +178,7 @@ function unlikecomment(wallusername, postID, commentID) {
   {{/* xhr.setRequestHeader("Content-Type", "application/json"); */}}
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status === 200) {
+        window.location.reload();
         var json = JSON.parse(xhr.responseText);
         console.log(json);
     }
@@ -189,6 +197,7 @@ function likepost(wallusername, postID) {
   {{/* xhr.setRequestHeader("Content-Type", "application/json"); */}}
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status === 200) {
+        window.location.reload();
         var json = JSON.parse(xhr.responseText);
         console.log(json);
     }
@@ -206,6 +215,7 @@ function unlikepost(wallusername, postID) {
   {{/* xhr.setRequestHeader("Content-Type", "application/json"); */}}
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status === 200) {
+        window.location.reload();
         var json = JSON.parse(xhr.responseText);
         console.log(json);
     }
@@ -225,6 +235,7 @@ commentID = commentID.replace("ObjectID(\"", "").replace("\")", "");
   xhr.setRequestHeader("Content-Type", "application/json");
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status === 200) {
+        window.location.reload();
         {{/* var json = JSON.parse(xhr.responseText); */}}
         console.log(xhr.responseText);
     }
